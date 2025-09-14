@@ -4,3 +4,7 @@ __pycache__/
 venv
 data
 node_modules/
+run.bat
+run_backend.bat
+
+db.sqlite3
