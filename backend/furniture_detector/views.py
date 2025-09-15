@@ -1,48 +1,58 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import *
+from .models import Task, Picture
 import uuid
 from django.conf import settings
 import os
 from .tasks import process_image
 
+# -----------------------
+# Upload image
+# -----------------------
 @api_view(['POST'])
 def upload_image(request):
     serializer = UploadSerializer(data=request.data)
+
+    session_id = request.data.get('session_id')
+    task_id = request.data.get('task_id')
+
+    if not session_id or not task_id:
+        return Response({"error": "Session id and task id must be provided"}, status=400)
+
     if serializer.is_valid():
         image = serializer.validated_data['file']
-        task_id = str(uuid.uuid4())
-        path = os.path.join(settings.MEDIA_ROOT, f'{task_id}.jpg')
+
+        task, created = Task.objects.get_or_create(
+            id=task_id, defaults={"session_id": session_id}
+        )
+        picture_id = str(uuid.uuid4())
+        path = os.path.join(settings.MEDIA_ROOT, f'{picture_id}.jpg')
         with open(path, 'wb+') as f:
             for chunk in image.chunks():
                 f.write(chunk)
 
-        process_image.delay(task_id, path)
+        picture = Picture.objects.create(id=picture_id, image_path=path)
 
-        return Response({"task_id": task_id})
+        process_image.delay(task.id, picture.id, path)
+
+        return Response({"task_id": task.id, "picture_id": picture.id})
+
     return Response(serializer.errors, status=400)
 
-from celery.result import AsyncResult
-from core.celery import app
-
-@api_view(['GET'])
-def check_status(request, task_id):
-    result = AsyncResult(task_id, app=app)
-    return Response({
-        "task_id": task_id,
-        "status": result.status,
-        "result": result.result if result.ready() else None
-    })
 
 
+# -----------------------
+# Calculate dimensions
+# -----------------------
 @api_view(['POST'])
 def calculate_dimensions(request):
     """
-    Przykładowy body:
+    Body JSON:
     {
-        "reference_length": 50,   # cm, np. długość znanej referencji
-        "detected_length": 200    # px w zdjęciu
+        "reference_length": 50,   # cm
+        "detected_length": 200    # px
     }
     """
     ref_len = float(request.data.get("reference_length", 0))

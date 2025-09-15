@@ -33,7 +33,7 @@ def update_job_status(task, status, session_id=None, **kwargs):
 
 
 @shared_task(bind=True)
-def process_image(self, task_id, path):
+def process_image(self, task_id, picture_id, path):
     # MOCK SOLUTION
     time.sleep(5)
 

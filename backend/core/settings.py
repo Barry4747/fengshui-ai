@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'channels',
     'corsheaders',
     'api',
+    'furniture_detector',
     
 ]
 
