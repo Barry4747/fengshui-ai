@@ -1,0 +1,58 @@
+# IMPORTANT
+# =====================================================
+# ModelManager Configuration File
+# =====================================================
+# This YAML file defines the models available in your system.
+# Each model should belong to a category, and each model entry
+# should include:
+#   - class: the name of the Python class registered in CLASS_MAP
+#   - required_vram: estimated VRAM (GB) needed to load the model
+#   - constructor_kwargs: keyword arguments passed to the model's constructor
+#   - loader_kwargs: keyword arguments passed to the model's load_model() method
+#
+# Notes for users:
+# - Ensure your model class inherits from BaseModel (implements load_model and unload_model)
+# - VRAM estimation helps ModelManager decide which models to unload if memory is low
+# - You can add as many categories as you like (e.g., detection, generation, segmentation)
+# =====================================================
+
+models:
+  detection:  # Category: object detection models
+    yolov8s:
+      class: YOLOModel
+      required_vram: 8
+      constructor_kwargs:
+        model_path: "runs/detect/train/weights/best.pt"
+        device: 0
+      loader_kwargs:
+        # Additional kwargs for load_model() if needed
+        batch_size: 16
+        imgsz: 640
+
+    yolov8m:
+      class: YOLOModel
+      required_vram: 12
+      constructor_kwargs:
+        model_path: "runs/detect/train/weights/best_m.pt"
+        device: 0
+      loader_kwargs:
+        batch_size: 8
+        imgsz: 640
+
+  segmentation:  # Category: image segmentation models
+    maskrcnn:
+      class: MaskRCNNModel
+      required_vram: 10
+      constructor_kwargs:
+        model_path: "models/maskrcnn.pth"
+        device: 0
+      loader_kwargs: {}
+
+# =====================================================
+# Example usage:
+# -----------------------------------------------------
+# In Python:
+#   ModelManager.load_config(config_path="models_config.yaml")
+#   model = ModelManager.get_model("yolov8s", model_category="detection")
+#   results = model.predict_image("test.jpg")
+# =====================================================
