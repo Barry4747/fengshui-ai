@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 from dotenv import load_dotenv
-from base_model_for_registry import BaseModel
+from .base_model_for_registry import BaseModel
 from warnings import warn
 import os
 import yaml

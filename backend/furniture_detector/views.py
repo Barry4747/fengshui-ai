@@ -35,7 +35,7 @@ def upload_image(request):
 
         picture = Picture.objects.create(id=picture_id, image_path=path)
 
-        process_image.delay(task.id, picture.id, path)
+        process_image.delay(task.id, picture.id, session_id, path)
 
         return Response({"task_id": task.id, "picture_id": picture.id})
 
