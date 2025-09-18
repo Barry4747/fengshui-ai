@@ -22,5 +22,5 @@ class TaskProgressConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    async def job_progress(self, event):
+    async def task_progress(self, event):
         await self.send(text_data=json.dumps(event))

@@ -5,6 +5,8 @@ class Picture(models.Model):
     id = models.CharField(max_length=100, primary_key=True)
     image_path = models.CharField(max_length=255)
 
+    detected_data = models.JSONField(blank=True, null=True)
+
     def __str__(self):
         return f"Picture {self.id}"
 

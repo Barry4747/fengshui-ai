@@ -31,7 +31,7 @@ class YOLOModel(BaseModel):
             self.model = None
             print(f"[YOLOModel] Unloaded model from {self.model_path}")
 
-    def predict_image(self, image_path: str, save_path: str = None, show: bool = False):
+    def predict_image(self, image_path: str, save_path: str = None):
         """
         Run inference on a single image.
         """
@@ -40,15 +40,16 @@ class YOLOModel(BaseModel):
 
         results = self.model.predict(source=image_path, device=self.device, save=bool(save_path))
 
-        if save_path:
-            for result in results:
-                result.save(filename=save_path)
+        detections = []
+        for r in results:
+            for box in r.boxes:
+                detections.append({
+                    "class_id": int(box.cls),
+                    "confidence": float(box.conf),
+                    "bbox": box.xyxy[0].tolist()  # [x1, y1, x2, y2]
+                })
 
-        if show:
-            for result in results:
-                result.show()
-
-        return results
+        return detections
 
     def predict_folder(self, folder_path: str, save_path: str = "outputs"):
         """
@@ -58,9 +59,21 @@ class YOLOModel(BaseModel):
             raise RuntimeError("Model is not loaded. Call load_model() first.")
 
         results = self.model.predict(source=folder_path, device=self.device, save=True, project=save_path)
-        return results
+        
+        detections = []
+        for r in results:
+            for box in r.boxes:
+                detections.append({
+                    "class_id": int(box.cls),
+                    "confidence": float(box.conf),
+                    "bbox": box.xyxy[0].tolist()  # [x1, y1, x2, y2]
+                })
+                
+        return detections
 
-    def predict_camera(self, camera_id: int = 0):
+
+    # camera feature
+    def _predict_camera(self, camera_id: int = 0):
         """
         Run real-time inference on webcam.
         Press 'q' to quit.
