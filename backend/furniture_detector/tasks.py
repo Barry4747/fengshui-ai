@@ -57,3 +57,31 @@ def process_image(self, task_id, picture_id, session_id, path, model_name='furni
     update_job_status(task, "decoding_finished", session_id=session_id)
 
     return {"status": "done", "results": results}
+
+
+def get_depth_image(image_path: str = None, model_name: str ="midas"):
+    if not image_path:
+        pass
+    model = ModelManager.get_model(model_name=model_name, model_category='depth')
+
+    results = model.predict_image(image_path)
+
+    for fname, depth in results.items():
+        print(fname, "-> depth map shape:", depth.shape)
+
+
+@shared_task(bind=True)
+def calculate_dimensions(self, session_id, task_id, picture_id):
+    picture = Picture.objects.get(id=picture_id)
+    
+    # DATA STRUCTURE
+    # [ { class_id, confidance, bbox= [x1, y1, x2, y2] } , ... ]
+    data = picture.detected_data
+
+    get_depth_image(picture.image_path)
+
+    return {"status": "done", "results": data}
+    
+
+
+

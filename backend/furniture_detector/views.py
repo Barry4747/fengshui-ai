@@ -7,6 +7,7 @@ import uuid
 from django.conf import settings
 import os
 from .tasks import process_image
+from .tasks import calculate_dimensions as calc_dim
 
 # -----------------------
 # Upload image
@@ -55,11 +56,11 @@ def calculate_dimensions(request):
         "detected_length": 200    # px
     }
     """
-    ref_len = float(request.data.get("reference_length", 0))
-    detected_len = float(request.data.get("detected_length", 0))
+    
+    session_id = request.data.get('session_id')
+    task_id = request.data.get('task_id')
+    picture_id = request.data.get('picture_id')
 
-    if ref_len <= 0 or detected_len <= 0:
-        return Response({"error": "Invalid values"}, status=400)
+    calc_dim.delay(session_id, task_id, picture_id)
 
-    scale = ref_len / detected_len
-    return Response({"scale_factor": scale})
+    return Response({"scale_factor": 1})
