@@ -90,12 +90,16 @@ class MiDaSModel(BaseModel):
                 torch.save(checkpoint, tmp_file.name)
                 clean_model_path = tmp_file.name
 
-            self.transform = get_dpt_transform()
-            self.model = DPTDepthModel(
-                path=clean_model_path,
-                backbone="beitl16_512",
-                non_negative=True,
-            )
+            if model_path and "beit_large_512" in os.path.basename(model_path).lower():
+                print(f"[MiDaSModel] Loading BEiT model from {model_path}")
+                self.transform = get_dpt_transform()
+                self.model = DPTDepthModel(
+                    path=model_path,
+                    backbone="beitl16_512",
+                    non_negative=True,
+                )
+            else:
+                raise NotImplementedError("Obsługiwany jest tylko model dpt_beit_large_512.pt")
 
             os.unlink(clean_model_path)
 

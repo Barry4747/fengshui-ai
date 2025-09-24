@@ -66,9 +66,11 @@ def get_depth_image(image_path: str = None, model_name: str ="midas"):
 
     results = model.predict_image(image_path)
 
-    for fname, depth in results.items():
-        print(fname, "-> depth map shape:", depth.shape)
-
+    if isinstance(results, dict):
+        for fname, depth in results.items():
+            print(fname, "-> depth map shape:", depth.shape)
+    else:
+        print(results)
 
 @shared_task(bind=True)
 def calculate_dimensions(self, session_id, task_id, picture_id):

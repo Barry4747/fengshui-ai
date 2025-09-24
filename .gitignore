@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 venv
+venv310
 data
 node_modules/
 run.bat
