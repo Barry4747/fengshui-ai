@@ -1,11 +1,13 @@
-from .model.registry import ModelManager
-from .model.yolo import YOLOModel
-from .model.dpt_beit import MiDaSModel
+from .depth.model.registry import ModelManager
+from .depth.model.yolo import YOLOModel
+from .depth.model.dpt_beit import MiDaSModel
+from .dimensions.SAM import SAMSegmenter
 
 # models to load
 models_dict = {
     "YOLOModel": YOLOModel,
-    "MiDaSModel": MiDaSModel
+    "MiDaSModel": MiDaSModel,
+    "SAMSegmenter": SAMSegmenter
 }
 
 
