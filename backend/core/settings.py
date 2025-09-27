@@ -45,8 +45,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'api',
     'furniture_detector',
-    
+    'users',    
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -161,3 +162,10 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    )
+}
+AUTH_USER_MODEL = "users.CustomUser"
