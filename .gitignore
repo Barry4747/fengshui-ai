@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 venv
+venv310
 data
 node_modules/
 run.bat
@@ -9,3 +10,5 @@ run_backend.bat
 
 db.sqlite3
 models.yaml
+
+midas/
