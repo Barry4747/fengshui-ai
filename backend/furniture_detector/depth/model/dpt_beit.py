@@ -73,7 +73,7 @@ class MiDaSModel(BaseModel):
 
         if repo_path and repo_path not in sys.path:
             sys.path.insert(0, repo_path)
-        from midas.dpt_depth import DPTDepthModel
+        from .midas.dpt_depth import DPTDepthModel
 
         if model_path and "beit_large_512" in os.path.basename(model_path).lower():
             print(f"[MiDaSModel] Loading BEiT model from {model_path}")

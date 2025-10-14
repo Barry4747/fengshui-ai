@@ -4,6 +4,7 @@ __pycache__/
 venv
 venv310
 data
+media
 node_modules/
 run.bat
 run_backend.bat

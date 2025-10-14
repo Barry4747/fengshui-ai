@@ -12,6 +12,8 @@ from .tasks import calculate_dimensions as calc_dim
 # -----------------------
 # Upload image
 # -----------------------
+import os
+
 @api_view(['POST'])
 def upload_image(request):
     serializer = UploadSerializer(data=request.data)
@@ -28,7 +30,12 @@ def upload_image(request):
         task, created = Task.objects.get_or_create(
             id=task_id, defaults={"session_id": session_id}
         )
+
         picture_id = str(uuid.uuid4())
+
+        # 🔒 Upewnij się, że folder istnieje
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
         path = os.path.join(settings.MEDIA_ROOT, f'{picture_id}.jpg')
         with open(path, 'wb+') as f:
             for chunk in image.chunks():
@@ -41,6 +48,7 @@ def upload_image(request):
         return Response({"task_id": task.id, "picture_id": picture.id})
 
     return Response(serializer.errors, status=400)
+
 
 
 

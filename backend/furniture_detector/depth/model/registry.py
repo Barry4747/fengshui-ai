@@ -32,7 +32,12 @@ class ModelManager:
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
 
+        if not config:
+            logger.warning('No models loaded')
+            return
+
         models = config.get("models", {})
+        
 
         for category, models_dict in models.items():
             cls._model_types.append(category)
